@@ -49,6 +49,12 @@ func NewUpdateCommand() *cobra.Command {
 				req.PublicPort = &port
 				hasChanges = true
 			}
+			if cmd.Flags().Changed("ports-mappings") {
+				// An empty value is sent as "" on purpose: it clears the mappings.
+				mappings, _ := cmd.Flags().GetString("ports-mappings")
+				req.PortsMappings = &mappings
+				hasChanges = true
+			}
 
 			// Resource limits
 			if cmd.Flags().Changed("limits-memory") {
@@ -114,6 +120,7 @@ func NewUpdateCommand() *cobra.Command {
 	updateDatabaseCmd.Flags().String("image", "", "Docker image")
 	updateDatabaseCmd.Flags().Bool("is-public", false, "Make database publicly accessible")
 	updateDatabaseCmd.Flags().Int("public-port", 0, "Public port")
+	updateDatabaseCmd.Flags().String("ports-mappings", "", "Comma-separated Docker port mappings as [ip:]host:container, e.g. '10.0.0.5:5432:5432' (pass \"\" to remove all; applied on restart)")
 	updateDatabaseCmd.Flags().String("limits-memory", "", "Memory limit")
 	updateDatabaseCmd.Flags().String("limits-cpus", "", "CPU limit")
 	updateDatabaseCmd.Flags().String("sqlite-databases", "", "Comma-separated SQLite database file names (SQLite only)")

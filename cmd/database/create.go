@@ -58,6 +58,9 @@ Examples:
 			if dbType == "sqlite" && (cmd.Flags().Changed("is-public") || cmd.Flags().Changed("public-port")) {
 				return fmt.Errorf("--is-public and --public-port are not supported for sqlite databases")
 			}
+			if dbType == "sqlite" && cmd.Flags().Changed("ports-mappings") {
+				return fmt.Errorf("--ports-mappings is not supported for sqlite databases")
+			}
 
 			req := &models.DatabaseCreateRequest{
 				ServerUUID:  serverUUID,
@@ -99,6 +102,10 @@ Examples:
 			if cmd.Flags().Changed("public-port") {
 				port, _ := cmd.Flags().GetInt("public-port")
 				req.PublicPort = &port
+			}
+			if cmd.Flags().Changed("ports-mappings") {
+				mappings, _ := cmd.Flags().GetString("ports-mappings")
+				req.PortsMappings = &mappings
 			}
 			tags, _ := cmd.Flags().GetStringArray("tag")
 			additionalTags, _ := cmd.Flags().GetStringSlice("tags")
@@ -264,6 +271,7 @@ Examples:
 	cmd.Flags().Bool("instant-deploy", false, "Deploy immediately after creation")
 	cmd.Flags().Bool("is-public", false, "Make database publicly accessible")
 	cmd.Flags().Int("public-port", 0, "Public port")
+	cmd.Flags().String("ports-mappings", "", "Comma-separated Docker port mappings as [ip:]host:container, e.g. '10.0.0.5:5432:5432' (not for sqlite)")
 	cmd.Flags().String("limits-memory", "", "Memory limit (e.g., '512m', '2g')")
 	cmd.Flags().String("limits-cpus", "", "CPU limit (e.g., '0.5', '2')")
 	cmd.Flags().StringArray("tag", nil, "Tag to assign (repeatable)")

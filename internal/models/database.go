@@ -11,8 +11,9 @@ type Database struct {
 	Type        string  `json:"type"` // postgresql, mysql, mongodb, redis, etc.
 
 	// Network configuration
-	IsPublic   *bool `json:"is_public,omitempty"`
-	PublicPort *int  `json:"public_port,omitempty"`
+	IsPublic      *bool   `json:"is_public,omitempty"`
+	PublicPort    *int    `json:"public_port,omitempty"`
+	PortsMappings *string `json:"ports_mappings,omitempty" table:"-"`
 
 	// Resource limits (hidden from CLI output)
 	LimitsMemory            *string `json:"limits_memory,omitempty" table:"-"`
@@ -96,6 +97,9 @@ type DatabaseCreateRequest struct {
 	IsPublic    *bool   `json:"is_public,omitempty"`
 	PublicPort  *int    `json:"public_port,omitempty"`
 
+	// PortsMappings is a comma-separated list of [ip:]host:container Docker port mappings.
+	PortsMappings *string `json:"ports_mappings,omitempty"`
+
 	// Resource limits (hidden from CLI output)
 	LimitsMemory            *string `json:"limits_memory,omitempty" table:"-"`
 	LimitsMemorySwap        *string `json:"limits_memory_swap,omitempty" table:"-"`
@@ -173,6 +177,10 @@ type DatabaseUpdateRequest struct {
 	Description *string `json:"description,omitempty"`
 	IsPublic    *bool   `json:"is_public,omitempty"`
 	PublicPort  *int    `json:"public_port,omitempty"`
+
+	// PortsMappings is a comma-separated list of [ip:]host:container Docker port mappings.
+	// omitempty only drops a nil pointer, so a pointer to "" is sent as "" and clears the mappings.
+	PortsMappings *string `json:"ports_mappings,omitempty"`
 
 	// Resource limits
 	LimitsMemory *string `json:"limits_memory,omitempty"`

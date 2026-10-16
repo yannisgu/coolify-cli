@@ -478,3 +478,19 @@ func TestEnvironmentVariableCreateRequest_Marshal(t *testing.T) {
 	assert.NotNil(t, unmarshaled.IsBuildTime)
 	assert.True(t, *unmarshaled.IsBuildTime)
 }
+
+func TestDatabaseUpdateRequest_PortsMappingsJSON(t *testing.T) {
+	data, err := json.Marshal(DatabaseUpdateRequest{})
+	require.NoError(t, err)
+	assert.JSONEq(t, `{}`, string(data), "nil ports_mappings is omitted")
+
+	empty := ""
+	data, err = json.Marshal(DatabaseUpdateRequest{PortsMappings: &empty})
+	require.NoError(t, err)
+	assert.JSONEq(t, `{"ports_mappings":""}`, string(data), "empty ports_mappings is sent to clear the field")
+
+	var db Database
+	require.NoError(t, json.Unmarshal([]byte(`{"uuid":"db","ports_mappings":"10.8.0.5:5432:5432"}`), &db))
+	require.NotNil(t, db.PortsMappings)
+	assert.Equal(t, "10.8.0.5:5432:5432", *db.PortsMappings)
+}
